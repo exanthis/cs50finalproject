@@ -1,10 +1,16 @@
 from flask import Flask, redirect, render_template, request
+from flask_sqlalchemy import SQLAlchemy
 
 # Configure application
 app = Flask(__name__)
 
 # Reload templates when they are changed
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+app.config['DEBUG'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/finaldb'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+db = SQLAlchemy(app)
 
 
 @app.after_request
@@ -27,47 +33,54 @@ def submit():
     # are received. if not, redirect to error. (server-side)
     if not request.form.get("year"):
         return render_template("error.html", message="You failed to provide a year")
-    if not request.form.get("question"):
+    if not request.form.get("choosequestion"):
         return render_template("error.html", message="You failed to provide a question number")
     if not request.form.get("answer"):
         return render_template("error.html", message="You failed to provide an answer")
 
     # Redirect to the appropriate year
     year = "/" + request.form.get('year')
-    return redirect(year)
+    # Redirecting with code 307 because the redirect function provided in Flask sends a 302
+    # status code to the client by default, which is changed to GET by many browsers.
+    # 307 was created to disambiguate between the two (307 = POST, 303 = GET)
+    return redirect(year, code=307)
 
 
 @app.route("/2016", methods=["GET", "POST"])
 def twentySixteen():
-    if request.method == "GET":
+    if request.method == "GET":  # Return html form fragment to index
         return render_template('2016.html')
 
     if request.method == "POST":
-        return  # TODO
+        # Check answer
+        return "<p>hello</p>"
 
 
 @app.route("/2017", methods=["GET", "POST"])
 def twentySeventeen():
-    if request.method == "GET":
+    if request.method == "GET":  # Return html form fragment to index
         return render_template('2017.html')
 
     if request.method == "POST":
-        return  # TODO
+        # Check answer
+        return "<p>hello</p>"
 
 
 @app.route("/2018", methods=["GET", "POST"])
 def twentyEighteen():
-    if request.method == "GET":
+    if request.method == "GET":  # Return html form fragment to index
         return render_template('2018.html')
 
     if request.method == "POST":
-        return  # TODO
+        # Check answer
+        return "<p>hello</p>"
 
 
 @app.route("/2019", methods=["GET", "POST"])
 def twentyNineteen():
-    if request.method == "GET":
+    if request.method == "GET":  # Return html form fragment to index
         return render_template('2019.html')
 
     if request.method == "POST":
-        return  # TODO
+        # Check answer
+        return "<p>hello</p>"

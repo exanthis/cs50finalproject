@@ -2,11 +2,11 @@
 
 {% block main %}
 
-<form id="form" action='/form' method='post' onsubmit="return validateForm()">
+<form id="form" action='/form' method='post'>
     <div class="form-group">
         <label for="year">Select a year</label>
         <select class="form-control required" id="year" name="year" onchange="question(this.value);">
-          <option selected disabled value="">--Years 2016-2019 supported--</option>
+          <option selected disabled>--Years 2016-2019 supported--</option>
           <option value="2016">2016</option>
           <option value="2017">2017</option>
           <option value="2018">2018</option>
@@ -24,7 +24,7 @@
 </form>
 
 <script>
-
+subbut = document.querySelector('#submit');
 // This function receives the year input by the user and reveals the form category for 
 // question choice, answer input and submit button.
 function question(year)
@@ -47,39 +47,29 @@ function question(year)
     // Also reveal answer and submit button
     answerDiv = document.getElementById("answerDiv");
     answerDiv.style.display = "block";
-    subbut = document.querySelector('#submit');
     submit.style.display = "block";
 }
 
 
 // Implement client-side form validation with javaScript
-form.addEventListener("submit", function(event) {
-    event.preventDefault();
-});
-
 subbut.onclick = function() {
     let chooseYear = document.querySelector('#year');
     let chooseQuestion = document.querySelector('#choosequestion');
     let chooseAnswer = document.querySelector('#answer');
-    if (!chooseYear.value)
-    {
-        alert("Please provide a year");
+    let form = document.querySelector('form');
+    if (!chooseYear.value) {
+        alert ('You must provide a year!');
         return false;
     }
-    else if (!questioninput.value)
-    {
-        alert("Please provide a Question");
+    else if (chooseQuestion.value == "") {
+        alert ('You must provide a question!');
         return false;
     }
-    else if (!chooseAnswer.value)
-    {
-        alert("Please provide an Answer");
+    else if (!chooseAnswer.value) {
+        alert ('You must provide an answer!');
         return false;
     }
-    else
-    {
-        form.submit();
-    }
+    return true;
 };
 
 </script>
