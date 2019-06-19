@@ -2,10 +2,10 @@
 
 {% block main %}
 
-<form id="form" action='/form' method='post'>
+<form id="form" action='/form' method='post' onsubmit="return validateForm()">
     <div class="form-group">
         <label for="year">Select a year</label>
-        <select class="form-control required" id="year" name="year" onchange="question();">
+        <select class="form-control required" id="year" name="year" onchange="question(this.value);">
           <option selected disabled value="">--Years 2016-2019 supported--</option>
           <option value="2016">2016</option>
           <option value="2017">2017</option>
@@ -13,45 +13,8 @@
           <option value="2019">2019</option>
         </select>
     </div>
-    <div id="questionsDiv16" class="form-group" style="display: none;" onchange="answer();">
-        <label for="choosequestion">Select a question</label>
-        <select class="form-control" id="choosequestion" name="choosequestion">
-            <option selected disabled>-- Choose your question --</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-        </select>
-    </div>
-    <div id="questionsDiv17" class="form-group" style="display: none;" onchange="answer();">
-        <label for="choosequestion">Select a question</label>
-        <select class="form-control" id="choosequestion" name="choosequestion">
-            <option selected disabled>-- Choose your question --</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-        </select>
-    </div>
-    <div id="questionsDiv18" class="form-group" style="display: none;" onchange="answer();">
-        <label for="choosequestion">Select a question</label>
-        <select class="form-control" id="choosequestion" name="choosequestion">
-            <option selected disabled>-- Choose your question --</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-        </select>
-    </div>
-    <div id="questionsDiv19" class="form-group" style="display: none;" onchange="answer();">
-        <label for="choosequestion">Select a question</label>
-        <select class="form-control" id="choosequestion" name="choosequestion">
-            <option selected disabled>-- Choose your question --</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-        </select>
+    <div id="questionsDiv" class="form-group">
+        <!-- Questions form goes here via AJAX-->
     </div>
     <div id="answerDiv" class="form-group" style="display: none;">
         <label for="answer">Enter your answer</label>
@@ -61,73 +24,64 @@
 </form>
 
 <script>
-    // Reveal answer textarea
-    function answer() {
-        answerDiv = document.getElementById("answerDiv");
-        answerDiv.style.display = "block";
-        subbut = document.querySelector('#submit');
-        submit.style.display = "block";
-    };
+
+// This function receives the year input by the user and reveals the form category for 
+// question choice, answer input and submit button.
+function question(year)
+{
+    // Deal with situation where nothing is chosen
+    if (year == "")
+        return;
+    // create AJAX object
+    var ajax = new XMLHttpRequest();
+    // callback function to pre-fill div once page is loaded
+    ajax.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("questionsDiv").innerHTML = this.responseText;
+        }
+    }
+    // Open file and transmit data
+    ajax.open("GET", year, true);
+    ajax.send();
+
+    // Also reveal answer and submit button
+    answerDiv = document.getElementById("answerDiv");
+    answerDiv.style.display = "block";
+    subbut = document.querySelector('#submit');
+    submit.style.display = "block";
+}
 
 
-    // Reveal correct year question choice
-    function question() {
-        questionsDiv16 = document.getElementById("questionsDiv16");
-        questionsDiv17 = document.getElementById("questionsDiv17");
-        questionsDiv18 = document.getElementById("questionsDiv18");
-        questionsDiv19 = document.getElementById("questionsDiv19");
-        var year = document.getElementById("year");
-        if (year.value == 2016)
-        {
-            questionsDiv16.style.display = "block";
-            questionsDiv17.style.display = "none";
-            questionsDiv18.style.display = "none";
-            questionsDiv19.style.display = "none";
-        }
-        if (year.value == 2017)
-        {
-            questionsDiv17.style.display = "block";
-            questionsDiv16.style.display = "none";
-            questionsDiv18.style.display = "none";
-            questionsDiv19.style.display = "none";
-        }
-        if (year.value == 2018)
-        {
-            questionsDiv18.style.display = "block";
-            questionsDiv16.style.display = "none";
-            questionsDiv17.style.display = "none";
-            questionsDiv19.style.display = "none";
-        }
-        if (year.value == 2019)
-        {
-            questionsDiv19.style.display = "block";
-            questionsDiv16.style.display = "none";
-            questionsDiv17.style.display = "none";
-            questionsDiv18.style.display = "none";
-        }
-    };
-    let form = document.querySelector('#form');
-    // Preventing form submission so we can perform our check. If check validates, then we will submit the form programmatically using JS.
-    form.addEventListener("submit", function(event) {
-        event.preventDefault();
-    });
-    let subbut = document.querySelector('#submit');
-    let answerinput = document.querySelector('#answer')
-    let questioninput = document.querySelector('#choosequestion')
-    subbut.onclick = function() {
-        if (!answerinput.value)
-        {
-            alert("Please provide an answer");
-        }
-        if (!questioninput.value)
-        {
-            alert("Please provide a Q");
-        }
-    };
+// Implement client-side form validation with javaScript
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+});
 
+subbut.onclick = function() {
+    let chooseYear = document.querySelector('#year');
+    let chooseQuestion = document.querySelector('#choosequestion');
+    let chooseAnswer = document.querySelector('#answer');
+    if (!chooseYear.value)
+    {
+        alert("Please provide a year");
+        return false;
+    }
+    else if (!questioninput.value)
+    {
+        alert("Please provide a Question");
+        return false;
+    }
+    else if (!chooseAnswer.value)
+    {
+        alert("Please provide an Answer");
+        return false;
+    }
+    else
+    {
+        form.submit();
+    }
+};
 
 </script>
-
-
 
 {% endblock main %}
