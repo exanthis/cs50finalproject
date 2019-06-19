@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+<form id="form" action='/form' method='post'>
+    <div class="form-group">
+        <label for="year">Select a year</label>
+        <select class="form-control required" id="year" name="year" onchange="question();">
+          <option selected disabled value="">--Years 2016-2019 supported--</option>
+          <option value="2016">2016</option>
+          <option value="2017">2017</option>
+          <option value="2018">2018</option>
+          <option value="2019">2019</option>
+        </select>
+    </div>
+    <div id="questionsDiv16" class="form-group" style="display: none;" onchange="answer();">
+        <label for="choosequestion">Select a question</label>
+        <select class="form-control" id="choosequestion" name="choosequestion">
+            <option selected disabled>-- Choose your question --</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+    </div>
+    <div id="questionsDiv17" class="form-group" style="display: none;" onchange="answer();">
+        <label for="choosequestion">Select a question</label>
+        <select class="form-control" id="choosequestion" name="choosequestion">
+            <option selected disabled>-- Choose your question --</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+    </div>
+    <div id="questionsDiv18" class="form-group" style="display: none;" onchange="answer();">
+        <label for="choosequestion">Select a question</label>
+        <select class="form-control" id="choosequestion" name="choosequestion">
+            <option selected disabled>-- Choose your question --</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+    </div>
+    <div id="questionsDiv19" class="form-group" style="display: none;" onchange="answer();">
+        <label for="choosequestion">Select a question</label>
+        <select class="form-control" id="choosequestion" name="choosequestion">
+            <option selected disabled>-- Choose your question --</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+    </div>
+    <div id="answerDiv" class="form-group" style="display: none;">
+        <label for="answer">Enter your answer</label>
+        <input type="text" class="form-control required" id="answer" name="answer">
+    </div>
+    <button class="btn btn-primary" type="submit" id="submit" style="display: none;">Check solution</button>
+</form>
+
+<script>
+    // Reveal answer textarea
+    function answer() {
+        answerDiv = document.getElementById("answerDiv");
+        answerDiv.style.display = "block";
+        subbut = document.querySelector('#submit');
+        submit.style.display = "block";
+    };
+
+
+    // Reveal correct year question choice
+    function question() {
+        questionsDiv16 = document.getElementById("questionsDiv16");
+        questionsDiv17 = document.getElementById("questionsDiv17");
+        questionsDiv18 = document.getElementById("questionsDiv18");
+        questionsDiv19 = document.getElementById("questionsDiv19");
+        var year = document.getElementById("year");
+        if (year.value == 2016)
+        {
+            questionsDiv16.style.display = "block";
+            questionsDiv17.style.display = "none";
+            questionsDiv18.style.display = "none";
+            questionsDiv19.style.display = "none";
+        }
+        if (year.value == 2017)
+        {
+            questionsDiv17.style.display = "block";
+            questionsDiv16.style.display = "none";
+            questionsDiv18.style.display = "none";
+            questionsDiv19.style.display = "none";
+        }
+        if (year.value == 2018)
+        {
+            questionsDiv18.style.display = "block";
+            questionsDiv16.style.display = "none";
+            questionsDiv17.style.display = "none";
+            questionsDiv19.style.display = "none";
+        }
+        if (year.value == 2019)
+        {
+            questionsDiv19.style.display = "block";
+            questionsDiv16.style.display = "none";
+            questionsDiv17.style.display = "none";
+            questionsDiv18.style.display = "none";
+        }
+    };
+    let form = document.querySelector('#form');
+    // Preventing form submission so we can perform our check. If check validates, then we will submit the form programmatically using JS.
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+    });
+    let subbut = document.querySelector('#submit');
+    let answerinput = document.querySelector('#answer')
+    let questioninput = document.querySelector('#choosequestion')
+    subbut.onclick = function() {
+        if (!answerinput.value)
+        {
+            alert("Please provide an answer");
+        }
+        if (!questioninput.value)
+        {
+            alert("Please provide a Q");
+        }
+    };
+
+
+</script>
+
+
+
+{% endblock main %}
