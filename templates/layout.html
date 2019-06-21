@@ -23,8 +23,8 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         {% set navigation_bar = [
-          ('/', 'index', 'CS50PD: Check Solutions'),
-          ('/puzzlepacks', 'puzzlepacks', 'CS50PD: Puzzle Packs')
+          ('/', 'index', 'Check Solutions'),
+          ('/puzzlepacks', 'puzzlepacks', 'Puzzle Packs')
           ] -%}
           {% set active_page = active_page|default('index') -%}
         <div class="collapse navbar-collapse" id="navbarsExample03">
@@ -45,7 +45,7 @@
         {% if messages %}
         <header>
             {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible border text-center" role="alert">
+            <div style="margin: 10px 20px 0px 20px;" class="alert alert-{{ category }} alert-dismissible fade show border text-center" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
                 {{ message }}
             </div>
