@@ -27,7 +27,12 @@ def after_request(response):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "GET":
-        return render_template('index.html')
+        return render_template('index.html', title="Check Solutions")
+    if request.method == "POST":
+        return render_template('index.html', year=request.form.get('year'),
+                               question=request.form.get('question'),
+                               answer=request.form.get('answer'),
+                               response=request.form.get('response'))
 
 
 @app.route("/form", methods=["POST"])
@@ -41,31 +46,36 @@ def submit():
     if not request.form.get("answer"):
         return render_template("error.html", message="You failed to provide an answer")
 
-    # Redirect to the appropriate year
-    year = "/" + request.form.get('year')
-    # Redirecting with code 307 because the redirect function provided in Flask sends a 302
-    # status code to the client by default, which is changed to GET by many browsers.
-    # 307 was created to disambiguate between the two (307 = POST, 303 = GET)
-    return redirect(year, code=307)
+    year = request.form.get('year')
+    question = request.form.get('choosequestion')
+    answer = request.form.get('answer').upper()
+    response = check(year, question, answer)
+    if response == "correct":
+        flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!",
+              'success')
+        # do database thingies
+    else:
+        flash(f"Unfortunately, {answer} is not the correct answer for {year}'s Question\
+              #{question}", 'danger')
+    return redirect(url_for('index', year=year, question=question, answer=answer,
+                    response=response), code=307)
 
 
+@app.route("/puzzlepacks", methods=["GET"])
+def puzzlepacks():
+    return render_template('puzzlepacks.html', title="Downloads")
+
+
+@app.route("/about", methods=["GET"])
+def about():
+    return render_template("about.html", title="About")
+
+
+# HTML FRAGMENT RETRIEVAL
 @app.route("/2016", methods=["GET", "POST"])
 def twentySixteen():
     if request.method == "GET":  # Return html form fragment to index
         return render_template('2016.html')
-
-    if request.method == "POST":
-        # Check answer
-        year = request.form.get('year')
-        question = request.form.get('choosequestion')
-        answer = request.form.get('answer').upper()
-        response = check(year, question, answer)
-        if response == "correct":
-            flash('Well done, that was correct!', 'success')
-            return redirect(url_for('index'))
-        else:
-            flash('Unfortunately, that was not correct', 'danger')
-            return redirect(url_for('index'))
 
 
 @app.route("/2017", methods=["GET", "POST"])
@@ -73,26 +83,14 @@ def twentySeventeen():
     if request.method == "GET":  # Return html form fragment to index
         return render_template('2017.html')
 
-    if request.method == "POST":
-        # Check answer
-        return "<p>hello</p>"
-
 
 @app.route("/2018", methods=["GET", "POST"])
 def twentyEighteen():
     if request.method == "GET":  # Return html form fragment to index
         return render_template('2018.html')
 
-    if request.method == "POST":
-        # Check answer
-        return "<p>hello</p>"
-
 
 @app.route("/2019", methods=["GET", "POST"])
 def twentyNineteen():
     if request.method == "GET":  # Return html form fragment to index
         return render_template('2019.html')
-
-    if request.method == "POST":
-        # Check answer
-        return "<p>hello</p>"

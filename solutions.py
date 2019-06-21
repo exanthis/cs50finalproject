@@ -1,21 +1,52 @@
 solutions16 = {
-    '1': ['ORGANISATION', 'ORGANIZATION'],
-    '2': ['FUCK', 'CUNT']
+    '1': ['GERMANY'],
+    '2': ['TELLES'],
+    '3': ['SELENA'],
+    '4': ['NORTON'],
+    '5': ['VENETIAN'],
+    '6': ['KAPLINSKY'],
+    '7': ['BOWIE', 'DAVID BOWIE'],
+    '8': ['ARGO'],
+    '9': ['SOVEREIGNTY'],
+    '10': ['AMINO'],
+    '11': ['VANNA', 'VANNA WHITE'],
+    '12': ['FROZEN']
     }
 
 solutions17 = {
-    '1': ['ORGANISATION', 'ORGANIZATION'],
-    '2': ['FUCK', 'CUNT']
+    '1': ['JOLT'],
+    '2': ['ORGANISATION', 'ORGANIZATION'],
+    '3': ['CHECK'],
+    '4': ['DRACULA', 'NOSFERATU'],
+    '5': ['PRISM'],
+    '6': ['DAHSHUR', 'CAIRO', 'EGYPT', 'DASHUR'],
+    '7': ['BONDS', 'BARRY BONDS', 'WILLIE MAYS'],
+    '8': ['DRAGON']
     }
 
 solutions18 = {
-    '1': ['ORGANISATION', 'ORGANIZATION'],
-    '2': ['FUCK', 'CUNT']
+    '1': ['ARCHITECTURE'],
+    '2': ['MEIROWITZ'],
+    '3': ['COINAGE'],
+    '4': ['WELCOME'],
+    '5': ['OCEAN'],
+    '6': ['SNAKE EYES'],
+    '7': ['ATHLETICISM'],
+    '8': ['EXPECTATIONS']
     }
 
 solutions19 = {
-    '1': ['ORGANISATION', 'ORGANIZATION'],
-    '2': ['FUCK', 'CUNT']
+    '1': ['FINANCIER'],
+    '2': ['VILNIUS'],
+    '3': ['BEHIND'],
+    '4': ['SPORADIC'],
+    '5': ['CONTRAST'],
+    '6': ['RAINCOAT'],
+    '7': ['THIRTY'],
+    '8': ['DECADE'],
+    '9': ['MARSHALL', 'ROB MARSHALL'],
+    '10': ['MONOCHROME', 'CUNT'],
+    '11': ['COLUMNS']
     }
 
 
