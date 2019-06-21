@@ -1,8 +1,10 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
+from solutions import check
 
 # Configure application
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # Reload templates when they are changed
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -22,9 +24,10 @@ def after_request(response):
     return response
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template('index.html')
+    if request.method == "GET":
+        return render_template('index.html')
 
 
 @app.route("/form", methods=["POST"])
@@ -53,7 +56,16 @@ def twentySixteen():
 
     if request.method == "POST":
         # Check answer
-        return "<p>hello</p>"
+        year = request.form.get('year')
+        question = request.form.get('choosequestion')
+        answer = request.form.get('answer').upper()
+        response = check(year, question, answer)
+        if response == "correct":
+            flash('Well done, that was correct!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Unfortunately, that was not correct', 'danger')
+            return redirect(url_for('index'))
 
 
 @app.route("/2017", methods=["GET", "POST"])
