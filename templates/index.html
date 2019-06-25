@@ -20,7 +20,7 @@
         <label for="answer">Enter your answer</label>
         <input type="text" style="text-transform: uppercase" class="form-control required" id="answer" name="answer">
     </div>
-    <button class="btn btn-primary" type="submit" id="submit" style="display: none;">Check solution</button>
+    <button class="btn btn-primary" type="submit" id="btnSubmit" style="display: none;">Check solution</button>
 </form>
 <br>
 {% if request.method == "POST" %}
@@ -37,11 +37,11 @@
       <td></td>
       <td></td>
     </tbody>
-  </table>
+  </table> 
 {% endif %}
 
 <script>
-subbut = document.querySelector('#submit');
+subbut = document.querySelector('#btnSubmit');
 // This function receives the year input by the user and reveals the form category for 
 // question choice, answer input and submit button.
 function question(year)
@@ -64,16 +64,20 @@ function question(year)
     // Also reveal answer and submit button
     answerDiv = document.getElementById("answerDiv");
     answerDiv.style.display = "block";
-    submit.style.display = "block";
+    btnSubmit.style.display = "block";
 }
 
 
 // Implement client-side form validation with javaScript
+let form = document.querySelector('form');
+form.addEventListener("submit", function(event) {
+        event.preventDefault();
+    });
 subbut.onclick = function() {
     let chooseYear = document.querySelector('#year');
     let chooseQuestion = document.querySelector('#choosequestion');
     let chooseAnswer = document.querySelector('#answer');
-    let form = document.querySelector('form');
+    // Checking all fields input correctly
     if (!chooseYear.value) {
         alert ('You must provide a year!');
         return false;
@@ -86,9 +90,29 @@ subbut.onclick = function() {
         alert ('You must provide an answer!');
         return false;
     }
-    return true;
+    // create AJAX object
+    var response;
+    var ajax = new XMLHttpRequest();
+    // callback function to pre-fill div once page is loaded
+    ajax.onreadystatechange = function ajaxcheckJS() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (ajax.responseText === "false")
+            {
+                alert("Incorrect answer. Please try again.")
+            }
+            else
+            {
+                form.submit();
+            }
+        }
+    }
+    // Open file and transmit data
+    ajax.open("GET", '/checkJS?answer=' + chooseAnswer.value + '&year=' + chooseYear.value + '&question=' + chooseQuestion.value, true);
+    ajax.send();
+
 };
 
 </script>
 
 {% endblock main %}
+

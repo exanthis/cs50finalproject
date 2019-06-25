@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, flash, url_for
+from flask import Flask, redirect, render_template, request, flash, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from solutions import check
 
@@ -39,6 +39,7 @@ def index():
 def submit():
     # Validate form submission server side - check that all the required 'name="xyz"' attributes
     # are received. if not, redirect to error. (server-side)
+    print("in /form")
     if not request.form.get("year"):
         return render_template("error.html", message="You failed to provide a year")
     if not request.form.get("choosequestion"):
@@ -48,7 +49,8 @@ def submit():
 
     year = request.form.get('year')
     question = request.form.get('choosequestion')
-    answer = request.form.get('answer').upper()
+    answer = request.form.get('answer')
+    # Check answer, using our check function in solutions.py.
     response = check(year, question, answer)
     if response == "correct":
         flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!",
@@ -69,6 +71,25 @@ def puzzlepacks():
 @app.route("/about", methods=["GET"])
 def about():
     return render_template("about.html", title="About")
+
+
+@app.route("/checkJS", methods=["GET"])
+def checkJS():
+    """Destination of JavaScript request that checks answer. Returns true if answer available,
+    else false, in JSON format"""
+    # We have done this server-side in '/regiser'
+    print("checkJS")
+    year = request.args.get("year")
+    question = request.args.get("question")
+    answer = request.args.get("answer")
+    print(f"answer in checkjs is {answer}")
+    response = check(year, question, answer)
+    if response == "correct":
+        print("JS RIGHT!!!!!!!!!")
+        return "true"  # Answer correct, form will submit + redirect to /form
+    else:
+        print("JS WRONG")
+        return "false"  # Answer wrong, form will not submit.
 
 
 # HTML FRAGMENT RETRIEVAL

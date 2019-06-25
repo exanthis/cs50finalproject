@@ -45,13 +45,16 @@ solutions19 = {
     '7': ['THIRTY'],
     '8': ['DECADE'],
     '9': ['MARSHALL', 'ROB MARSHALL'],
-    '10': ['MONOCHROME', 'CUNT'],
+    '10': ['MONOCHROME'],
     '11': ['COLUMNS']
     }
 
 
 def check(year, question, answer):
-    print(year, int(question))
+    """ Checks answer against solution dicts in solutions.py. Returns the strings 'correct'
+    or 'wrong'.
+    Takes 3 parameters in this order: 'year', 'question', 'answer'. """
+    
     if year == "2016":
         x = solutions16[question]
     if year == "2017":
@@ -61,8 +64,10 @@ def check(year, question, answer):
     if year == "2019":
         x = solutions19[question]
 
-    print(x)
+    answer = answer.upper()
+    print(year, question, answer)
     for i in range(len(x)):
         if answer == x[i]:
+            print("check correct in solutions.py")
             return "correct"
     return "wrong"
