@@ -50,10 +50,11 @@ class Questions(db.Model):
 
 
 class Questionnames(db.Model):
-    # A static table, holding all question numbers and the name for that question (e.g. 'look up')
+    # A static table, holding all question numbers and the name for that question (e.g. '2018-2' 'look up')
     question_id = db.Column(db.Integer, nullable=False, primary_key=True)
     question_number = db.Column(db.String(20), nullable=False, unique=True)
     question_name = db.Column(db.String(20), nullable=False)
+    questions = db.relationship('Questions', backref='questionname', lazy=True)
 
     def __repr__(self):
         # Since users will author posts, we need a one-to-many relationship.

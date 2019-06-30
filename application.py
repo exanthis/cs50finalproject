@@ -44,9 +44,12 @@ def chad():
 def index():
     if current_user.is_authenticated:
         user = User.query.filter_by(email=current_user.email).first()
-        solved_problems = Questions.query.filter_by(user_id=user.id).all()
-
-        return render_template('index.html', title="Check Solutions")
+        users_solved_problems = Questions.query.filter_by(user_id=user.id).all()
+        if users_solved_problems:
+            return render_template('index.html', title="Check Solutions",
+                                   users_solved_problems=users_solved_problems)
+        else:
+            return render_template('index.html', title="Check Solutions")
     else:
         return render_template('index.html', title="Check Solutions")
 
@@ -118,7 +121,7 @@ def submit():
         if already_solved:
             flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!\
                     But you've solved this one before!", 'info')
-        else:
+        else:  # Has not solved this puzzle yet
             this_solved = Questions(question_id=question_id, user_id=user.id)
             db.session.add(this_solved)
             db.session.commit()
