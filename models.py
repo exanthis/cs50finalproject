@@ -1,11 +1,11 @@
-from application import db
+from application import db, login_manager
 from datetime import datetime
 from flask_login import UserMixin
 
 
-# @login_manager.user_loader
-# def load_user(user_id):
-   # return User.query.get(int(user_id))
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class User(db.Model, UserMixin):
@@ -28,6 +28,9 @@ class User(db.Model, UserMixin):
 
 
 class Questions(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'question_id', name='unique_user_question'),
+    )
     # A record of the questions solved for every user. Filter by user id and question number.
     # Add in each question as it gets solved.
     solved_id = db.Column(db.Integer, primary_key=True)

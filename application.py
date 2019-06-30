@@ -1,8 +1,8 @@
 from flask import Flask, redirect, render_template, request, flash, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from solutions import check
-from forms import RegistrationForm, LoginForm
-
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 
 # Configure application
 app = Flask(__name__)
@@ -12,12 +12,18 @@ app.config['SECRET_KEY'] = 'c3c622ac561c3a11930731cd3aa5ee35'
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:eagleitsa119@localhost:5432/finaldb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:eagleitsa119@localhost:5432/finaldbu'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+login_manager = LoginManager(app)
+# Login required stuff
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'warning'
 
+from models import User, Questions, Questionnames
+from forms import RegistrationForm, LoginForm
 
-from models import User, Questions
 
 @app.after_request
 def after_request(response):
@@ -28,18 +34,37 @@ def after_request(response):
     return response
 
 
+@app.route('/chad')
+@login_required
+def chad():
+    return render_template('chad.html', title='CHAD!!!!!')
+
+
 @app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template('index.html', title="Check Solutions")
+    if current_user.is_authenticated:
+        user = User.query.filter_by(email=current_user.email).first()
+        solved_problems = Questions.query.filter_by(user_id=user.id).all()
+
+        return render_template('index.html', title="Check Solutions")
+    else:
+        return render_template('index.html', title="Check Solutions")
 
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        flash('You are already logged in.', 'info')
+        return redirect(url_for('index'))
     form = RegistrationForm()
     # Did the form validate when submitted, POST request
     if form.validate_on_submit():
-        # Flash message
-        flash(f'Your account has been created. You are now able to log in', 'success')
+        # Add to database
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash(f'Your account has been created. You are now able to log in.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -47,14 +72,28 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        print(user)
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('index'))
+        else:
+            flash('Login unsuccessful. Check email and password.', 'danger')
     return render_template('login.html', title='Login', form=form)
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 
 @app.route("/form", methods=["POST"])
 def submit():
     # Validate form submission server side - check that all the required 'name="xyz"' attributes
     # are received. if not, redirect to error. (server-side)
-    print("in /form")
     if not request.form.get("year"):
         return render_template("error.html", message="You failed to provide a year")
     if not request.form.get("choosequestion"):
@@ -68,9 +107,23 @@ def submit():
     # Check answer, using our check function in solutions.py.
     response = check(year, question, answer)
     if response == "correct":
-        flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!",
-              'success')
-        # do database thingies
+        # Find question_id from the Questionnames static table, to insert as foreign key in
+        # Questions record
+        questionAnswered = year + '-' + question
+        question_row = Questionnames.query.filter_by(question_number=questionAnswered).first()
+        question_id = question_row.question_id
+        # Insert the solution into the Questions record, so user knows they've solved this one
+        user = User.query.filter_by(email=current_user.email).first()
+        already_solved = Questions.query.filter_by(user_id=user.id, question_id=question_id).first()
+        if already_solved:
+            flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!\
+                    But you've solved this one before!", 'info')
+        else:
+            this_solved = Questions(question_id=question_id, user_id=user.id)
+            db.session.add(this_solved)
+            db.session.commit()
+            flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!",
+                  'success')
     else:
         flash(f"Unfortunately, {answer} is not the correct answer for {year}'s Question\
               #{question}", 'danger')

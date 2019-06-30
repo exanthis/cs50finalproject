@@ -22,7 +22,7 @@
     <button class="btn btn-primary" type="submit" id="btnSubmit" style="display: none;">Check solution</button>
 </form>
 <br>
-{% if request.method == "POST" %}
+{% if current_user.is_authenticated %}
 <table class="table table-striped table-hover">
     <thead class="thead-dark">
       <tr>
