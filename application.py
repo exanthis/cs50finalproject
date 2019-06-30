@@ -1,19 +1,23 @@
 from flask import Flask, redirect, render_template, request, flash, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from solutions import check
+from forms import RegistrationForm, LoginForm
+
 
 # Configure application
 app = Flask(__name__)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.config['SECRET_KEY'] = 'c3c622ac561c3a11930731cd3aa5ee35'
 
 # Reload templates when they are changed
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/finaldb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:eagleitsa119@localhost:5432/finaldb'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 db = SQLAlchemy(app)
 
+
+from models import User, Questions
 
 @app.after_request
 def after_request(response):
@@ -26,13 +30,24 @@ def after_request(response):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    if request.method == "GET":
-        return render_template('index.html', title="Check Solutions")
-    if request.method == "POST":
-        return render_template('index.html', year=request.form.get('year'),
-                               question=request.form.get('question'),
-                               answer=request.form.get('answer'),
-                               response=request.form.get('response'))
+    return render_template('index.html', title="Check Solutions")
+
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    # Did the form validate when submitted, POST request
+    if form.validate_on_submit():
+        # Flash message
+        flash(f'Your account has been created. You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html', title='Register', form=form)
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    return render_template('login.html', title='Login', form=form)
 
 
 @app.route("/form", methods=["POST"])
@@ -59,8 +74,7 @@ def submit():
     else:
         flash(f"Unfortunately, {answer} is not the correct answer for {year}'s Question\
               #{question}", 'danger')
-    return redirect(url_for('index', year=year, question=question, answer=answer,
-                    response=response), code=307)
+    return redirect(url_for('index'))
 
 
 @app.route("/puzzlepacks", methods=["GET"])

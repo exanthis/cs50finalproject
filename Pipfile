@@ -12,6 +12,12 @@ python-dotenv = "*"
 flask-sqlalchemy = "*"
 psycopg2 = "*"
 gunicorn = "*"
+flask-wtf = "*"
+wtforms = "*"
+flask-login = "*"
 
 [requires]
 python_version = "3.7"
+
+[scripts]
+psql = "psql -U postgres"
