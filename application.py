@@ -48,11 +48,8 @@ def index():
     if current_user.is_authenticated:
         user = User.query.filter_by(email=current_user.email).first()
         users_solved_problems = Questions.query.filter_by(user_id=user.id).all()
-        if users_solved_problems:
-            return render_template('index.html', title="Check Solutions",
-                                   users_solved_problems=users_solved_problems)
-        else:
-            return render_template('index.html', title="Check Solutions")
+        return render_template('index.html', title="Check Solutions",
+                               users_solved_problems=users_solved_problems)
     else:
         return render_template('index.html', title="Check Solutions")
 
@@ -121,7 +118,8 @@ def submit():
             question_id = question_row.question_id
             # Insert the solution into the Questions record, so user knows they've solved this one
             user = User.query.filter_by(email=current_user.email).first()
-            already_solved = Questions.query.filter_by(user_id=user.id, question_id=question_id).first()
+            already_solved = Questions.query.filter_by(user_id=user.id, question_id=question_id).\
+                first()
             if already_solved:
                 flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!\
                         But you've solved this one before!", 'info')
@@ -155,17 +153,13 @@ def checkJS():
     """Destination of JavaScript request that checks answer. Returns true if answer available,
     else false, in JSON format"""
     # We have done this server-side in '/regiser'
-    print("checkJS")
     year = request.args.get("year")
     question = request.args.get("question")
     answer = request.args.get("answer")
-    print(f"answer in checkjs is {answer}")
     response = check(year, question, answer)
     if response == "correct":
-        print("JS RIGHT!!!!!!!!!")
         return "true"  # Answer correct, form will submit + redirect to /form
     else:
-        print("JS WRONG")
         return "false"  # Answer wrong, form will not submit.
 
 

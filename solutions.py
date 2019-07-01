@@ -54,7 +54,6 @@ def check(year, question, answer):
     """ Checks answer against solution dicts in solutions.py. Returns the strings 'correct'
     or 'wrong'.
     Takes 3 parameters in this order: 'year', 'question', 'answer'. """
-    
     if year == "2016":
         x = solutions16[question]
     if year == "2017":
