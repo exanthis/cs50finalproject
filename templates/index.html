@@ -23,27 +23,70 @@
 </form>
 <br>
 {% if users_solved_problems %}
-<table class="table table-striped table-hover">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col">Year-Question</th>
-        <th scope="col">Puzzle</th>
-        <th scope="col">Date Solved</th>
-      </tr>
-    </thead>
-    <tbody>
+<div class="progress" style="height: 20px;">
+    <div id="sixteenBarSolo" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" style="width: 30%" aria-valuenow="{{ 100 * sixteen_progress/sixteen_proportion }}" aria-valuemin="0" aria-valuemax="100"><span style="color: black;">2016</span></div>
+</div>
+<br>
+<div class="progress" style="height: 20px;">
+    <div id="seventeenBarSolo" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 30%" aria-valuenow="{{ 100 * seventeen_progress/seventeen_proportion }}" aria-valuemin="0" aria-valuemax="100"><span style="color: black;">2017</span></div>
+</div>
+<br>
+<div class="progress" style="height: 20px;">
+    <div id="eighteenBarSolo" class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" style="width: 30%" aria-valuenow="{{ 100 * eighteen_progress/eighteen_proportion }}" aria-valuemin="0" aria-valuemax="100"><span style="color: black;">2018</span></div>
+</div>
+<br>
+<div class="progress" style="height: 20px;">
+    <div id="nineteenBarSolo" class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 30%" aria-valuenow="{{ 100 * nineteen_progress/nineteen_proportion }}" aria-valuemin="0" aria-valuemax="100"><span style="color: black;">2019</span></div>
+</div>
+<br>
+<div class="progress" style="height: 20px;">
+    <div id="sixteenBar" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" style="width: 30%" aria-valuenow="{{ sixteen_progress }}" aria-valuemin="0" aria-valuemax="100">{% if sixteen_progress > 10 %}2016{% endif %}</div>
+    <div id="seventeenBar" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 20%" aria-valuenow="{{ seventeen_progress }}" aria-valuemin="0" aria-valuemax="100">{% if seventeen_progress > 10 %}2017{% endif %}</div>
+    <div id="eighteenBar" class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" style="width: 20%" aria-valuenow="{{ eighteen_progress }}" aria-valuemin="0" aria-valuemax="100">{% if eighteen_progress > 10 %}2018{% endif %}</div>
+    <div id="nineteenBar" class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 30%" aria-valuenow="{{ nineteen_progress }}" aria-valuemin="0" aria-valuemax="100">{% if nineteen_progress > 10 %}2019{% endif %}</div>
+</div>
+<br>
+<table id="solvedProblems" class="display table table-striped table-hover">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Year</th>
+      <th scope="col">Question</th>
+      <th scope="col">Puzzle</th>
+      <th scope="col">Date Solved</th>
+    </tr>
+  </thead>
+  <tbody>
     {% for question in users_solved_problems %}
     <tr>
-      <th scope="row">{{ question.questionname.question_number }}</th>
+      <th scope="row">{{ question.questionname.question_number[0:4] }}</th>
+      <th scope="row">{{ question.questionname.question_number[5:] }}</th>
       <td>{{ question.questionname.question_name }}</td>
       <td>{{ question.date_solved.strftime('%A, %d %B %Y') }}</td>
     </tr>
     {% endfor %}
-    </tbody>
-  </table> 
+  </tbody>
+</table> 
 {% endif %}
 
+
 <script>
+
+document.querySelector('#sixteenBar').style.width = "{{ sixteen_progress }}%"
+document.querySelector('#seventeenBar').style.width = "{{ seventeen_progress }}%"
+document.querySelector('#eighteenBar').style.width = "{{ eighteen_progress }}%"
+document.querySelector('#nineteenBar').style.width = "{{ nineteen_progress }}%"
+document.querySelector('#sixteenBarSolo').style.width = "{{ 100 * sixteen_progress/sixteen_proportion }}%"
+document.querySelector('#seventeenBarSolo').style.width = "{{ 100 * seventeen_progress/seventeen_proportion }}%"
+document.querySelector('#eighteenBarSolo').style.width = "{{ 100 * eighteen_progress/eighteen_proportion }}%"
+document.querySelector('#nineteenBarSolo').style.width = "{{ 100 * nineteen_progress/nineteen_proportion }}%"
+
+$(document).ready(function () {
+    $('#solvedProblems').DataTable({
+        paging: false,
+        "order": [[ 0, 'asc' ], [ 1, 'asc' ]]
+    });
+});
+
 subbut = document.querySelector('#btnSubmit');
 // This function receives the year input by the user and reveals the form category for 
 // question choice, answer input and submit button.
@@ -58,16 +101,17 @@ function question(year)
     ajax.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             document.getElementById("questionsDiv").innerHTML = this.responseText;
+            // Also reveal answer and submit button
+            answerDiv = document.getElementById("answerDiv");
+            answerDiv.style.display = "block";
+            btnSubmit.style.display = "block";
         }
     }
     // Open file and transmit data
     ajax.open("GET", year, true);
     ajax.send();
 
-    // Also reveal answer and submit button
-    answerDiv = document.getElementById("answerDiv");
-    answerDiv.style.display = "block";
-    btnSubmit.style.display = "block";
+
 }
 
 
@@ -96,7 +140,6 @@ subbut.onclick = function() {
     // create AJAX object
     var response;
     var ajax = new XMLHttpRequest();
-    // callback function to pre-fill div once page is loaded
     ajax.onreadystatechange = function ajaxcheckJS() {
         if (this.readyState == 4 && this.status == 200) {
             if (ajax.responseText === "false")

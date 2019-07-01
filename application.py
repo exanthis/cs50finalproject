@@ -1,7 +1,7 @@
 import os
 from flask import Flask, redirect, render_template, request, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
-from solutions import check
+from solutions import check, solutions16, solutions17, solutions18, solutions19
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 
@@ -48,8 +48,45 @@ def index():
     if current_user.is_authenticated:
         user = User.query.filter_by(email=current_user.email).first()
         users_solved_problems = Questions.query.filter_by(user_id=user.id).all()
+        # Progress bar
+        sixteen = 0
+        seventeen = 0
+        eighteen = 0
+        nineteen = 0
+        for question in users_solved_problems:
+            # Find number of questions from each year user has solved
+            if question.questionname.question_number[0:4] == '2016':
+                sixteen += 1
+            if question.questionname.question_number[0:4] == '2017':
+                seventeen += 1
+            if question.questionname.question_number[0:4] == '2018':
+                eighteen += 1
+            if question.questionname.question_number[0:4] == '2019':
+                nineteen += 1
+        number_of_problems_solved = len(users_solved_problems)
+        number_of_questions = len(solutions16) + len(solutions17) + len(solutions18) + len(solutions19)
+        print(f"number of questions = {number_of_questions}")
+        overall_progress = 100 * number_of_problems_solved/number_of_questions
+        sixteen_progress = 100 * sixteen/number_of_questions
+        print(sixteen_progress)
+        seventeen_progress = 100 * seventeen/number_of_questions  # overall progress relative to total
+        eighteen_progress = 100 * eighteen/number_of_questions
+        nineteen_progress = 100 * nineteen/number_of_questions
+        sixteen_proportion = 100 * len(solutions16)/number_of_questions  # proportion of total each year makes up
+        seventeen_proportion = 100 * len(solutions17)/number_of_questions
+        eighteen_proportion = 100 * len(solutions18)/number_of_questions
+        nineteen_proportion = 100 * len(solutions19)/number_of_questions
         return render_template('index.html', title="Check Solutions",
-                               users_solved_problems=users_solved_problems)
+                               users_solved_problems=users_solved_problems,
+                               overall_progress=overall_progress,
+                               sixteen_progress=sixteen_progress,
+                               seventeen_progress=seventeen_progress,
+                               eighteen_progress=eighteen_progress,
+                               nineteen_progress=nineteen_progress,
+                               sixteen_proportion=sixteen_proportion,
+                               seventeen_proportion=seventeen_proportion,
+                               eighteen_proportion=eighteen_proportion,
+                               nineteen_proportion=nineteen_proportion)
     else:
         return render_template('index.html', title="Check Solutions")
 
@@ -164,25 +201,21 @@ def checkJS():
 
 
 # HTML FRAGMENT RETRIEVAL
-@app.route("/2016", methods=["GET", "POST"])
+@app.route("/2016")
 def twentySixteen():
-    if request.method == "GET":  # Return html form fragment to index
-        return render_template('2016.html')
+    return render_template('2016.html')
 
 
-@app.route("/2017", methods=["GET", "POST"])
+@app.route("/2017")
 def twentySeventeen():
-    if request.method == "GET":  # Return html form fragment to index
-        return render_template('2017.html')
+    return render_template('2017.html')
 
 
-@app.route("/2018", methods=["GET", "POST"])
+@app.route("/2018")
 def twentyEighteen():
-    if request.method == "GET":  # Return html form fragment to index
-        return render_template('2018.html')
+    return render_template('2018.html')
 
 
-@app.route("/2019", methods=["GET", "POST"])
+@app.route("/2019")
 def twentyNineteen():
-    if request.method == "GET":  # Return html form fragment to index
-        return render_template('2019.html')
+    return render_template('2019.html')
