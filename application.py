@@ -1,8 +1,11 @@
-from flask import Flask, redirect, render_template, request, flash, url_for, jsonify
+import os
+from flask import Flask, redirect, render_template, request, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
 from solutions import check
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+
+DATABASE_URL = os.environ['DATABASE_URL']
 
 # Configure application
 app = Flask(__name__)
@@ -12,7 +15,7 @@ app.config['SECRET_KEY'] = 'c3c622ac561c3a11930731cd3aa5ee35'
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:eagleitsa119@localhost:5432/finaldbu'
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -110,21 +113,25 @@ def submit():
     # Check answer, using our check function in solutions.py.
     response = check(year, question, answer)
     if response == "correct":
-        # Find question_id from the Questionnames static table, to insert as foreign key in
-        # Questions record
-        questionAnswered = year + '-' + question
-        question_row = Questionnames.query.filter_by(question_number=questionAnswered).first()
-        question_id = question_row.question_id
-        # Insert the solution into the Questions record, so user knows they've solved this one
-        user = User.query.filter_by(email=current_user.email).first()
-        already_solved = Questions.query.filter_by(user_id=user.id, question_id=question_id).first()
-        if already_solved:
-            flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!\
-                    But you've solved this one before!", 'info')
-        else:  # Has not solved this puzzle yet
-            this_solved = Questions(question_id=question_id, user_id=user.id)
-            db.session.add(this_solved)
-            db.session.commit()
+        if current_user.is_authenticated:
+            # Find question_id from the Questionnames static table, to insert as foreign key in
+            # Questions record
+            questionAnswered = year + '-' + question
+            question_row = Questionnames.query.filter_by(question_number=questionAnswered).first()
+            question_id = question_row.question_id
+            # Insert the solution into the Questions record, so user knows they've solved this one
+            user = User.query.filter_by(email=current_user.email).first()
+            already_solved = Questions.query.filter_by(user_id=user.id, question_id=question_id).first()
+            if already_solved:
+                flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!\
+                        But you've solved this one before!", 'info')
+            else:  # Has not solved this puzzle yet
+                this_solved = Questions(question_id=question_id, user_id=user.id)
+                db.session.add(this_solved)
+                db.session.commit()
+                flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!",
+                      'success')
+        else:
             flash(f"Well done, you solved {year}'s Question #{question} - {answer} is correct!",
                   'success')
     else:
