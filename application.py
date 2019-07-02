@@ -4,9 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 from solutions import check, solutions16, solutions17, solutions18, solutions19
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+import psycopg2
 
 DATABASE_URL = os.environ['DATABASE_URL']
 SECRET_KEY = os.environ['SECRET_KEY']
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 # Configure application
 app = Flask(__name__)
