@@ -8,7 +8,7 @@ import psycopg2
 
 DATABASE_URL = os.environ['DATABASE_URL']
 SECRET_KEY = os.environ['SECRET_KEY']
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
 
 # Configure application
 app = Flask(__name__)
