@@ -7,11 +7,12 @@ from flask_login import LoginManager, login_user, current_user, logout_user, log
 import psycopg2
 
 DATABASE_URL = os.environ['DATABASE_URL']
+SECRET_KEY = os.environ['SECRET_KEY']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 # Configure application
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'c3c622ac561c3a11930731cd3aa5ee35'
+app.config['SECRET_KEY'] = SECRET_KEY
 
 # Reload templates when they are changed
 app.config["TEMPLATES_AUTO_RELOAD"] = True

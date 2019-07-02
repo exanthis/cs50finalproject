@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 
 {% block main %}
+{% if not current_user.is_authenticated %}
+    <p>Welcome! Check your solutions here. If you would like to keep track of which puzzles you've solved and when, please<a href="{{ url_for('login') }}">login</a> or <a href="{{ url_for('register') }}">register</a></p>
+{% endif %}
 <form id="form" action='/form' method='post' autocomplete="off">
     <div class="form-group">
         <label for="year">Select a year</label>
@@ -61,7 +64,7 @@
       <th scope="row">{{ question.questionname.question_number[0:4] }}</th>
       <th scope="row">{{ question.questionname.question_number[5:] }}</th>
       <td>{{ question.questionname.question_name }}</td>
-      <td>{{ question.date_solved.strftime('%A, %d %B %Y') }}</td>
+      <td>{{ question.date_solved.strftime('%Y %m %d') }}</td>
     </tr>
     {% endfor %}
   </tbody>
